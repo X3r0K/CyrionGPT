@@ -239,7 +239,7 @@ export async function POST(request: Request) {
               openai: {
                 parallelToolCalls: false,
                 store: false,
-                reasoningEffort: config.isLargeModel ? 'low' : 'minimal',
+                reasoningEffort: 'minimal',
                 reasoningSummary: 'detailed',
               },
             },
