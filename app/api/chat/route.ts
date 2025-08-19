@@ -13,6 +13,7 @@ import {
   generateTitleFromUserMessage,
   handleInitialChatAndUserMessage,
   handleFinalChatAndAssistantMessage,
+  getAIHeaders,
 } from '@/lib/ai/actions';
 import { validateChatAccessWithLimits } from '@/lib/ai/actions/chat-validation';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
@@ -235,6 +236,7 @@ export async function POST(request: Request) {
           const result = streamText({
             model: myProvider.languageModel(config.selectedModel),
             system: systemPrompt,
+            headers: getAIHeaders(),
             providerOptions: {
               openai: {
                 parallelToolCalls: false,
@@ -242,6 +244,11 @@ export async function POST(request: Request) {
                 reasoningEffort: 'minimal',
                 reasoningSummary: 'detailed',
               },
+              ...(config.isPremiumUser && {
+                openrouter: {
+                  sort: 'price',
+                },
+              }),
             },
             messages: toVercelChatMessages(processedMessages, true),
             maxTokens: 4096,

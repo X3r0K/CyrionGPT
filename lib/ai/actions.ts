@@ -161,3 +161,12 @@ export async function generateTitleFromUserMessage({
     return textContent.substring(0, 100).trim();
   }
 }
+
+export const getAIHeaders = () => ({
+  "HTTP-Referer":
+    process.env.NODE_ENV === "development"
+      ? "https://test.pentest.co"
+      : "https://www.pentest.co",
+  "X-Title":
+    process.env.NODE_ENV === "development" ? "PentestGPT-Dev" : "PentestGPT",
+});
