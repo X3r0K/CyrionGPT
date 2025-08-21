@@ -264,28 +264,31 @@ export const deleteChat = internalMutation({
             .withIndex('by_file_id', (q) => q.eq('file_id', file._id))
             .collect();
 
-                  // Delete all file items
-        for (const item of fileItems) {
-          await ctx.db.delete(item._id);
-        }
-
-        // Delete file from Convex storage if it's a Convex file (no "/" in path)
-        if (file.file_path && !file.file_path.includes('/')) {
-          try {
-            const storageId = file.file_path as Id<'_storage'>;
-            await ctx.storage.delete(storageId);
-          } catch (storageError) {
-            // Log the error but don't fail the entire operation for missing storage files
-            const errorMessage = storageError instanceof Error ? storageError.message : String(storageError);
-            if (!errorMessage.includes('not found')) {
-              console.error(
-                `Failed to delete file from storage: ${file.file_path}`,
-                storageError,
-              );
-            }
-            // Continue with other deletions even if storage deletion fails
+          // Delete all file items
+          for (const item of fileItems) {
+            await ctx.db.delete(item._id);
           }
-        }
+
+          // Delete file from Convex storage if it's a Convex file (no "/" in path)
+          if (file.file_path && !file.file_path.includes('/')) {
+            try {
+              const storageId = file.file_path as Id<'_storage'>;
+              await ctx.storage.delete(storageId);
+            } catch (storageError) {
+              // Log the error but don't fail the entire operation for missing storage files
+              const errorMessage =
+                storageError instanceof Error
+                  ? storageError.message
+                  : String(storageError);
+              if (!errorMessage.includes('not found')) {
+                console.error(
+                  `Failed to delete file from storage: ${file.file_path}`,
+                  storageError,
+                );
+              }
+              // Continue with other deletions even if storage deletion fails
+            }
+          }
 
           // Delete the file record itself
           await ctx.db.delete(file._id);
@@ -320,7 +323,8 @@ export const deleteChat = internalMutation({
               await ctx.storage.delete(storageId);
             } catch (error) {
               // Log the error but don't fail for missing storage files
-              const errorMessage = error instanceof Error ? error.message : String(error);
+              const errorMessage =
+                error instanceof Error ? error.message : String(error);
               if (!errorMessage.includes('not found')) {
                 console.error(
                   'Failed to delete storage file:',
@@ -399,7 +403,10 @@ export const deleteAllChats = internalMutation({
               await ctx.storage.delete(storageId);
             } catch (storageError) {
               // Log the error but don't fail the entire operation for missing storage files
-              const errorMessage = storageError instanceof Error ? storageError.message : String(storageError);
+              const errorMessage =
+                storageError instanceof Error
+                  ? storageError.message
+                  : String(storageError);
               if (!errorMessage.includes('not found')) {
                 console.error(
                   `Failed to delete file from storage: ${file.file_path}`,
@@ -443,7 +450,8 @@ export const deleteAllChats = internalMutation({
               await ctx.storage.delete(storageId);
             } catch (error) {
               // Log the error but don't fail for missing storage files
-              const errorMessage = error instanceof Error ? error.message : String(error);
+              const errorMessage =
+                error instanceof Error ? error.message : String(error);
               if (!errorMessage.includes('not found')) {
                 console.error(
                   'Failed to delete storage file:',
