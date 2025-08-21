@@ -138,9 +138,6 @@ export async function executeReasonLLMTool({
 
     const result = streamText({
       model: selectedModel,
-      providerOptions: {
-        xai: { reasoningEffort: 'high' },
-      },
       system: systemPrompt,
       messages: toVercelChatMessages(messages),
       maxTokens: 8192,

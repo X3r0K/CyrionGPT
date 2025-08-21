@@ -264,24 +264,28 @@ export const deleteChat = internalMutation({
             .withIndex('by_file_id', (q) => q.eq('file_id', file._id))
             .collect();
 
-          // Delete all file items
-          for (const item of fileItems) {
-            await ctx.db.delete(item._id);
-          }
+                  // Delete all file items
+        for (const item of fileItems) {
+          await ctx.db.delete(item._id);
+        }
 
-          // Delete file from Convex storage if it's a Convex file (no "/" in path)
-          if (file.file_path && !file.file_path.includes('/')) {
-            try {
-              const storageId = file.file_path as Id<'_storage'>;
-              await ctx.storage.delete(storageId);
-            } catch (storageError) {
+        // Delete file from Convex storage if it's a Convex file (no "/" in path)
+        if (file.file_path && !file.file_path.includes('/')) {
+          try {
+            const storageId = file.file_path as Id<'_storage'>;
+            await ctx.storage.delete(storageId);
+          } catch (storageError) {
+            // Log the error but don't fail the entire operation for missing storage files
+            const errorMessage = storageError instanceof Error ? storageError.message : String(storageError);
+            if (!errorMessage.includes('not found')) {
               console.error(
                 `Failed to delete file from storage: ${file.file_path}`,
                 storageError,
               );
-              // Continue with other deletions even if storage deletion fails
             }
+            // Continue with other deletions even if storage deletion fails
           }
+        }
 
           // Delete the file record itself
           await ctx.db.delete(file._id);
@@ -309,18 +313,22 @@ export const deleteChat = internalMutation({
       if (allImagePaths.length > 0) {
         const imageDeletions = allImagePaths
           .filter((imagePath) => !imagePath.includes('/')) // Only delete Convex storage files
-          .map((storageIdString) => {
+          .map(async (storageIdString) => {
             try {
               // Convert string to storage ID
               const storageId = storageIdString as Id<'_storage'>;
-              return ctx.storage.delete(storageId);
+              await ctx.storage.delete(storageId);
             } catch (error) {
-              console.error(
-                'Failed to delete storage file:',
-                storageIdString,
-                error,
-              );
-              return Promise.resolve(); // Continue with other deletions even if one fails
+              // Log the error but don't fail for missing storage files
+              const errorMessage = error instanceof Error ? error.message : String(error);
+              if (!errorMessage.includes('not found')) {
+                console.error(
+                  'Failed to delete storage file:',
+                  storageIdString,
+                  error,
+                );
+              }
+              // Continue with other deletions even if one fails
             }
           });
         await Promise.all(imageDeletions);
@@ -390,10 +398,14 @@ export const deleteAllChats = internalMutation({
               const storageId = file.file_path as Id<'_storage'>;
               await ctx.storage.delete(storageId);
             } catch (storageError) {
-              console.error(
-                `Failed to delete file from storage: ${file.file_path}`,
-                storageError,
-              );
+              // Log the error but don't fail the entire operation for missing storage files
+              const errorMessage = storageError instanceof Error ? storageError.message : String(storageError);
+              if (!errorMessage.includes('not found')) {
+                console.error(
+                  `Failed to delete file from storage: ${file.file_path}`,
+                  storageError,
+                );
+              }
               // Continue with other deletions even if storage deletion fails
             }
           }
@@ -424,18 +436,22 @@ export const deleteAllChats = internalMutation({
       if (allImagePaths.length > 0) {
         const imageDeletions = allImagePaths
           .filter((imagePath) => !imagePath.includes('/')) // Only delete Convex storage files
-          .map((storageIdString) => {
+          .map(async (storageIdString) => {
             try {
               // Convert string to storage ID
               const storageId = storageIdString as Id<'_storage'>;
-              return ctx.storage.delete(storageId);
+              await ctx.storage.delete(storageId);
             } catch (error) {
-              console.error(
-                'Failed to delete storage file:',
-                storageIdString,
-                error,
-              );
-              return Promise.resolve(); // Continue with other deletions even if one fails
+              // Log the error but don't fail for missing storage files
+              const errorMessage = error instanceof Error ? error.message : String(error);
+              if (!errorMessage.includes('not found')) {
+                console.error(
+                  'Failed to delete storage file:',
+                  storageIdString,
+                  error,
+                );
+              }
+              // Continue with other deletions even if one fails
             }
           });
         await Promise.all(imageDeletions);
@@ -524,64 +540,6 @@ export const getChatsByUserId = internalQuery({
     }
   },
 });
-
-// export const getLastSharedMessageId = query({
-//   args: {
-//     chatId: v.string(),
-//   },
-//   returns: v.union(v.string(), v.null()),
-//   handler: async (ctx, args) => {
-//     try {
-//       const chat = await ctx.db
-//         .query('chats')
-//         .withIndex('by_chat_id', (q) => q.eq('id', args.chatId))
-//         .filter((q) => q.eq(q.field('sharing'), 'public'))
-//         .unique();
-
-//       return chat?.last_shared_message_id ?? null;
-//     } catch (error) {
-//       console.error('Error getting last shared message ID:', error);
-//       throw new Error(error instanceof Error ? error.message : 'Failed to get last shared message ID');
-//     }
-//   },
-// });
-
-// export const getSharedChatsByUserId = query({
-//   args: {
-//     userId: v.string(),
-//   },
-//   returns: v.array(
-//     v.object({
-//       _id: v.id('chats'),
-//       _creationTime: v.number(),
-//       id: v.string(),
-//       user_id: v.string(),
-//       model: v.string(),
-//       name: v.string(),
-//       finish_reason: v.optional(v.string()),
-//       sharing: v.union(v.literal('private'), v.literal('public')),
-//       last_shared_message_id: v.optional(v.string()),
-//       shared_at: v.optional(v.number()),
-//       shared_by: v.optional(v.string()),
-//       updated_at: v.optional(v.number()),
-//     }),
-//   ),
-//   handler: async (ctx, args) => {
-//     try {
-//       const chats = await ctx.db
-//         .query('chats')
-//         .withIndex('by_user_id', (q) => q.eq('user_id', args.userId))
-//         .filter((q) => q.eq(q.field('sharing'), 'public'))
-//         .order('desc')
-//         .collect();
-
-//       return chats;
-//     } catch (error) {
-//       console.error('Error getting shared chats by user ID:', error);
-//       throw new Error(error instanceof Error ? error.message : 'Failed to get shared chats');
-//     }
-//   },
-// });
 
 export const getChatByIdWithValidation = query({
   args: {
