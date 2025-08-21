@@ -4,7 +4,7 @@ import {
   wrapLanguageModel,
 } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { deepseek } from '@ai-sdk/deepseek';
+// import { deepseek } from '@ai-sdk/deepseek';
 import { openrouter } from '@openrouter/ai-sdk-provider';
 
 export const myProvider = customProvider({
@@ -14,7 +14,7 @@ export const myProvider = customProvider({
     'chat-model-large': openai.responses('gpt-4.1-2025-04-14'),
     'chat-model-large-text': openrouter('qwen/qwen3-coder'),
     'chat-model-reasoning': wrapLanguageModel({
-      model: deepseek('deepseek-reasoner'),
+      model: openrouter('qwen/qwen3-235b-a22b-thinking-2507'),
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
   },
