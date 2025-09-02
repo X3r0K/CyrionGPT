@@ -93,7 +93,7 @@ export function LoginForm({
           <div className="text-muted-foreground mt-2 text-center text-sm">
             <span>Don&apos;t have an account? </span>
             <Link
-              href="/signup"
+              href="https://hackerai.co/signup"
               className="hover:text-primary underline font-medium"
             >
               Sign up
@@ -183,7 +183,7 @@ export function LoginForm({
           <div className="text-muted-foreground mt-2 text-center text-sm">
             <span>Don&apos;t have an account? </span>
             <Link
-              href="/signup"
+              href="https://hackerai.co/signup"
               className="hover:text-primary underline font-medium"
             >
               Sign up
