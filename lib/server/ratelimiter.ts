@@ -21,7 +21,6 @@ const MODEL_DISPLAY_NAMES: Record<string, string> = {
   terminal: 'Terminal',
   'stt-1': 'speech-to-text',
   'reasoning-model': 'reasoning model',
-  'image-gen': 'image generation',
 };
 
 export type RateLimitResult = {

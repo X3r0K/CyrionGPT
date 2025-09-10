@@ -29,8 +29,6 @@ factually and objectively.\n\n`;
 
   if (currentModel === 'Terminal Model') {
     info += `The user has selected the terminal tool and wants to run commands in the terminal.\n\n`;
-  } else if (currentModel === 'Image Generation Model') {
-    info += `The user has selected the image generation tool and wants to generate images from descriptions.\n\n`;
   } else if (currentModel === 'Web Search Model') {
     info += `The user has selected the web search tool and wants to search the web for every query. `;
     if (userLocation?.city && userLocation?.country) {
@@ -42,7 +40,7 @@ factually and objectively.\n\n`;
     info += `\n\n`;
   }
 
-  if (currentModel !== 'Reasoning Model' && currentModel !== 'Deep Research') {
+  if (currentModel !== 'Reasoning Model') {
     // Model-specific capabilities information
     if (currentModel) {
       info += `If the user asks PentestGPT about how many messages they can send, costs of PentestGPT, \

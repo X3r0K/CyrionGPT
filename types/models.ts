@@ -3,9 +3,7 @@ export type RateLimitedFeature =
   | 'pentestgpt-pro' // Large Model
   | 'terminal' // Terminal
   | 'stt-1' // Speech-to-text
-  | 'reasoning-model' // Reasoning model
-  | 'image-gen' // Image generation
-  | 'deep-research'; // Deep research
+  | 'reasoning-model'; // Reasoning model
 
 export interface RateLimitInfo {
   remaining: number;

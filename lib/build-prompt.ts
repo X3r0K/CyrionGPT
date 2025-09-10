@@ -1,5 +1,4 @@
 import type { BuiltChatMessage, ChatMessage, ChatPayload } from '@/types';
-import { PluginID } from '@/types/plugins';
 import { countTokens } from 'gpt-tokenizer';
 import { toast } from 'sonner';
 
@@ -18,16 +17,11 @@ function findLastUserMessage(
 export async function buildFinalMessages(
   payload: ChatPayload,
   isPremiumSubscription: boolean,
-  selectedPlugin: PluginID,
 ): Promise<BuiltChatMessage[]> {
   const { chatMessages, retrievedFileItems, imagePaths } = payload;
 
   // Context window size: 22k tokens minus 2k for system prompt and overhead (20k effective)
-  // Deep Research uses 8k context window regardless of subscription tier
-  const CONTEXT_WINDOW =
-    isPremiumSubscription && selectedPlugin !== PluginID.DEEP_RESEARCH
-      ? 20000
-      : 8000;
+  const CONTEXT_WINDOW = isPremiumSubscription ? 20000 : 8000;
 
   let remainingTokens = CONTEXT_WINDOW;
 

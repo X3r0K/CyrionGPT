@@ -27,7 +27,6 @@ const modelPromptMap: Record<string, string> = {
   'chat-model-small': `${getPentestGPTInfo('Small Model', 'June 2024')}${systemPromptEnding}`,
   'chat-model-large': `${getPentestGPTInfo('Large Model', 'June 2024')}${systemPromptEnding}`,
   'chat-model-reasoning': `${getPentestGPTInfo('Reasoning Model', 'October 2024')}${systemPromptEnding}`,
-  'deep-research-model': `${getPentestGPTInfo('Deep Research', 'June 2024')}${systemPromptEnding}`,
 };
 
 export const getSystemPrompt = ({
@@ -46,11 +45,6 @@ export const getSystemPrompt = ({
   // For web-search-model, update the prompt with location info
   if (selectedPlugin === PluginID.WEB_SEARCH) {
     basePrompt = `${getPentestGPTInfo('Web Search Model', 'June 2024', userLocation)}${systemPromptEnding}`;
-  }
-
-  // For image-gen-model, update the prompt with image generation info
-  if (selectedPlugin === PluginID.IMAGE_GEN) {
-    basePrompt = `${getPentestGPTInfo('Image Generation Model', 'June 2024', userLocation)}${systemPromptEnding}`;
   }
 
   if (selectedPlugin === PluginID.TERMINAL) {

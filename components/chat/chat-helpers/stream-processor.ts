@@ -333,7 +333,6 @@ export const processResponse = async (
             browser: PluginID.BROWSER,
             run_terminal_cmd: PluginID.TERMINAL,
             webSearch: PluginID.WEB_SEARCH,
-            image_gen: PluginID.IMAGE_GEN,
           } as const;
 
           const plugin = toolMap[toolName as keyof typeof toolMap];

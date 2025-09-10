@@ -32,17 +32,9 @@ export const loadingStates = {
     icon: <Globe size={20} />,
     text: 'Browsing the web...',
   },
-  [PluginID.DEEP_RESEARCH]: {
-    icon: <Search size={20} />,
-    text: 'Researching... (takes 1-5 minutes)',
-  },
   [PluginID.TERMINAL]: {
     icon: <SquareTerminal size={20} />,
     text: 'Using terminal...',
-  },
-  [PluginID.IMAGE_GEN]: {
-    icon: <ImageIcon size={20} />,
-    text: 'Generating image... (takes 1-2 minutes)',
   },
 };
 

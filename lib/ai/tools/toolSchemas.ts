@@ -1,6 +1,5 @@
 import { createWebSearchTool } from './web-search';
 import { createBrowserTool } from './browser';
-import { createImageGenTool } from './image-gen';
 import { createShellExecTool } from './run_terminal_cmd-tool';
 import { createGetTerminalFilesTool } from './get_terminal_files-tool';
 import { DefaultSandboxManager } from './agent/utils/sandbox-manager';
@@ -48,7 +47,6 @@ export const createToolSchemas = ({
   } as ToolContext;
 
   const allSchemas = {
-    image_gen: createImageGenTool(profile, abortSignal, dataStream),
     webSearch: createWebSearchTool(profile, dataStream),
     browser: createBrowserTool(profile, abortSignal, dataStream),
     run_terminal_cmd: createShellExecTool(context),

@@ -6,7 +6,6 @@ import { useContext, useState } from 'react';
 import { WithTooltip } from '../../ui/with-tooltip';
 import { useUIContext } from '@/context/ui-context';
 import { UpgradePrompt, UpgradeModal } from './upgrade-modal';
-import { PLUGINS_WITHOUT_IMAGE_SUPPORT } from '@/types/plugins';
 import { ToolsDropdown } from './tools-dropdown';
 import type { LucideIcon } from 'lucide-react';
 
@@ -18,12 +17,8 @@ export const ToolOptions = ({ fileInputRef }: ToolOptionsProps) => {
   const TOOLTIP_DELAY = 500;
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState<
-    | 'deep research'
-    | 'terminal'
-    | 'file upload'
-    | 'websearch'
-    | 'image generation'
-  >('deep research');
+    'terminal' | 'file upload' | 'websearch'
+  >('websearch');
 
   const { isPremiumSubscription, isTemporaryChat } =
     useContext(PentestGPTContext);
@@ -39,18 +34,13 @@ export const ToolOptions = ({ fileInputRef }: ToolOptionsProps) => {
     }
 
     // Deselect all plugins when uploading files
-    if (
-      selectedPlugin &&
-      PLUGINS_WITHOUT_IMAGE_SUPPORT.includes(selectedPlugin)
-    ) {
+    if (selectedPlugin) {
       setSelectedPlugin(PluginID.NONE);
     }
     fileInputRef.current?.click();
   };
 
-  const handleUpgradePrompt = (
-    feature: 'deep research' | 'terminal' | 'websearch' | 'image generation',
-  ) => {
+  const handleUpgradePrompt = (feature: 'terminal' | 'websearch') => {
     setUpgradeFeature(feature);
     setShowUpgradePrompt(true);
   };
@@ -60,10 +50,8 @@ export const ToolOptions = ({ fileInputRef }: ToolOptionsProps) => {
   };
 
   const isAnyToolSelected =
-    selectedPlugin === PluginID.DEEP_RESEARCH ||
     selectedPlugin === PluginID.WEB_SEARCH ||
-    selectedPlugin === PluginID.TERMINAL ||
-    selectedPlugin === PluginID.IMAGE_GEN;
+    selectedPlugin === PluginID.TERMINAL;
 
   const SelectedPluginDisplay = ({
     icon: Icon,
@@ -104,14 +92,10 @@ export const ToolOptions = ({ fileInputRef }: ToolOptionsProps) => {
 
   const getSelectedPluginIcon = () => {
     switch (selectedPlugin) {
-      case PluginID.DEEP_RESEARCH:
-        return <SelectedPluginDisplay icon={Telescope} label="Research" />;
       case PluginID.WEB_SEARCH:
         return <SelectedPluginDisplay icon={Globe} label="Search" />;
       case PluginID.TERMINAL:
         return <SelectedPluginDisplay icon={SquareTerminal} label="Terminal" />;
-      case PluginID.IMAGE_GEN:
-        return <SelectedPluginDisplay icon={Image} label="Image" />;
       default:
         return null;
     }

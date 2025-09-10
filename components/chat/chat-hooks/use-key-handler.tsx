@@ -2,7 +2,6 @@ import { useUIContext } from '@/context/ui-context';
 import { PentestGPTContext } from '@/context/context';
 import { useContext } from 'react';
 import { toast } from 'sonner';
-import { PLUGINS_WITHOUT_IMAGE_SUPPORT } from '@/types/plugins';
 
 interface UseKeyboardHandlerProps {
   isTyping: boolean;
@@ -34,15 +33,6 @@ export const useKeyboardHandler = ({
     const items = event.clipboardData.items;
     for (const item of items) {
       if (item.type.indexOf('image') === 0) {
-        // Check if the active plugin doesn't support images
-        if (
-          selectedPlugin &&
-          PLUGINS_WITHOUT_IMAGE_SUPPORT.includes(selectedPlugin)
-        ) {
-          toast.error('Images are not allowed when using this feature');
-          return;
-        }
-
         // Check if using reasoning model
         if (chatSettings?.model === 'reasoning-model') {
           toast.error(

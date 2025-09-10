@@ -2,14 +2,12 @@ import React, { type FC, useMemo, useState, useEffect, useRef } from 'react';
 import { ChevronDown, Repeat } from 'lucide-react';
 import { WithTooltip } from './with-tooltip';
 import { SmallModel, LargeModel, ReasoningModel } from '@/lib/models/llm-list';
-import { PluginID } from '@/types/plugins';
 import { Menu, MenuItems, MenuButton, MenuItem } from '@headlessui/react';
 
 interface SwitchModelProps {
   currentModel: string;
   onChangeModel: (model: string) => void;
   isMobile: boolean;
-  messagePlugin?: string | null;
 }
 
 interface ModelConfig {
@@ -36,12 +34,7 @@ const MODELS: ModelConfig[] = [
   },
 ];
 
-const getModelDisplayName = (
-  modelId: string,
-  plugin?: string | null,
-): string => {
-  if (plugin === PluginID.DEEP_RESEARCH) return 'research';
-
+const getModelDisplayName = (modelId: string): string => {
   switch (modelId) {
     case SmallModel.modelId:
       return SmallModel.shortModelName?.toLowerCase() || 'small';
@@ -92,7 +85,6 @@ export const SwitchModel: FC<SwitchModelProps> = ({
   currentModel,
   onChangeModel,
   isMobile,
-  messagePlugin,
 }) => {
   const [shouldOpenUpward, setShouldOpenUpward] = useState(false);
   const [shouldCenter, setShouldCenter] = useState(false);
@@ -116,8 +108,8 @@ export const SwitchModel: FC<SwitchModelProps> = ({
   }, [isMobile]);
 
   const displayName = useMemo(
-    () => getModelDisplayName(currentModel, messagePlugin),
-    [currentModel, messagePlugin],
+    () => getModelDisplayName(currentModel),
+    [currentModel],
   );
 
   const iconSize = isMobile ? 22 : 20;

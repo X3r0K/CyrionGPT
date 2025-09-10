@@ -24,7 +24,6 @@ import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import { useUIContext } from '@/context/ui-context';
 import { WithTooltip } from './with-tooltip';
-import { PLUGINS_WITHOUT_IMAGE_SUPPORT } from '@/types/plugins';
 
 const DynamicKeyboardShortcutsPopup = dynamic(
   () => import('../chat/keyboard-shortcuts-popup'),
@@ -95,16 +94,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
     event.preventDefault();
 
     if (!isReadyToChat) {
-      setIsDragging(false);
-      return;
-    }
-
-    // Check if the active plugin doesn't support images
-    if (
-      selectedPlugin &&
-      PLUGINS_WITHOUT_IMAGE_SUPPORT.includes(selectedPlugin)
-    ) {
-      toast.error('Images are not allowed when using this feature');
       setIsDragging(false);
       return;
     }

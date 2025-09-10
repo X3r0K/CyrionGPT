@@ -62,15 +62,7 @@ export async function validateChatAccessWithLimits({
 
   // Check if non-premium user is trying to use premium plugins
   if (!config.isPremiumUser && selectedPlugin) {
-    if (selectedPlugin === PluginID.IMAGE_GEN) {
-      throw new ChatSDKError('forbidden:auth');
-    }
-
     if (selectedPlugin === PluginID.TERMINAL) {
-      throw new ChatSDKError('forbidden:auth');
-    }
-
-    if (selectedPlugin === PluginID.DEEP_RESEARCH) {
       throw new ChatSDKError('forbidden:auth');
     }
   }

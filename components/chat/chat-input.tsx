@@ -175,15 +175,11 @@ export const ChatInput: FC = () => {
                     'px-3',
                   )}
                   placeholder={
-                    selectedPlugin === PluginID.IMAGE_GEN
-                      ? 'Describe an image'
-                      : selectedPlugin === PluginID.TERMINAL
-                        ? 'Execute a command'
-                        : selectedPlugin === PluginID.DEEP_RESEARCH
-                          ? 'Get a detailed report'
-                          : selectedPlugin === PluginID.WEB_SEARCH
-                            ? 'Search the web'
-                            : 'Ask anything'
+                    selectedPlugin === PluginID.TERMINAL
+                      ? 'Execute a command'
+                      : selectedPlugin === PluginID.WEB_SEARCH
+                        ? 'Search the web'
+                        : 'Ask anything'
                   }
                   onValueChange={handleInputChange} // This function updates the userInput state
                   value={userInput} // This state should display the transcribed text

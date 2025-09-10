@@ -43,14 +43,9 @@ export const handleHostedChat = async (
 ) => {
   let apiEndpoint = '/api/chat';
 
-  if (modelParams.selectedPlugin === PluginID.DEEP_RESEARCH) {
-    apiEndpoint = '/api/tasks';
-  }
-
   const formattedMessages = await buildFinalMessages(
     payload,
     isPremiumSubscription,
-    modelParams.selectedPlugin,
   );
 
   const timezone = getUserTimezone();

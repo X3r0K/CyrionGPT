@@ -31,8 +31,6 @@ export enum PluginID {
   BROWSER = 'browser',
   TERMINAL = 'terminal',
   PENTEST_AGENT = 'pentest-agent',
-  DEEP_RESEARCH = 'deep-research',
-  IMAGE_GEN = 'image-gen',
 }
 
 export const Plugins: Record<PluginID, Plugin> = Object.fromEntries(
@@ -45,12 +43,4 @@ type PluginUrls = Record<string, string>;
 
 export const pluginUrls: PluginUrls = {
   PENTESTGPT: 'https://github.com/hackerai-tech/PentestGPT',
-};
-
-export const PLUGINS_WITHOUT_IMAGE_SUPPORT: PluginID[] = [
-  // Deep research and web search now support images
-];
-
-export const isPluginWithoutImageSupport = (pluginId: PluginID): boolean => {
-  return PLUGINS_WITHOUT_IMAGE_SUPPORT.includes(pluginId);
 };

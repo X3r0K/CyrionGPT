@@ -187,7 +187,6 @@ export const MessageActions: FC<MessageActionsProps> = ({
             currentModel={messageModel}
             onChangeModel={onRegenerateSpecificModel}
             isMobile={isMobile}
-            messagePlugin={messagePlugin}
           />
         )}
     </div>
