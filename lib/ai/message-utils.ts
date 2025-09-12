@@ -281,7 +281,7 @@ export async function processChatMessages(
   const pentestImageFiles = imageResult.pentestImageFiles;
 
   // Handle moderation and uncensoring
-  if (isNewConversation) {
+  if (isNewConversation && isPremiumSubscription) {
     const { shouldUncensorResponse } = await getModerationResult(
       processedMessages,
       isPremiumSubscription,
