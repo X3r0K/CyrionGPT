@@ -108,16 +108,6 @@ export const useSelectFileHandler = () => {
 
     const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
 
-    // Prevent image uploads for reasoning model - but only for supported image extensions
-    if (
-      file.type.startsWith('image/') &&
-      SUPPORTED_IMAGE_EXTENSIONS.includes(fileExtension) &&
-      chatSettings.model === 'reasoning-model'
-    ) {
-      toast.error('Image uploads are not supported with the Reasoning Model');
-      return;
-    }
-
     const loadingId = `loading-${crypto.randomUUID()}`;
     const processor = getFileProcessor(file);
 

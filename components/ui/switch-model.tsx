@@ -1,7 +1,7 @@
 import React, { type FC, useMemo, useState, useEffect, useRef } from 'react';
 import { ChevronDown, Repeat } from 'lucide-react';
 import { WithTooltip } from './with-tooltip';
-import { SmallModel, LargeModel, ReasoningModel } from '@/lib/models/llm-list';
+import { SmallModel, LargeModel } from '@/lib/models/llm-list';
 import { Menu, MenuItems, MenuButton, MenuItem } from '@headlessui/react';
 
 interface SwitchModelProps {
@@ -27,11 +27,6 @@ const MODELS: ModelConfig[] = [
     name: SmallModel.modelName,
     description: SmallModel.description || 'Faster for most questions',
   },
-  {
-    id: ReasoningModel.modelId,
-    name: ReasoningModel.modelName,
-    description: ReasoningModel.description || 'Uses advanced reasoning',
-  },
 ];
 
 const getModelDisplayName = (modelId: string): string => {
@@ -40,8 +35,6 @@ const getModelDisplayName = (modelId: string): string => {
       return SmallModel.shortModelName?.toLowerCase() || 'small';
     case LargeModel.modelId:
       return LargeModel.shortModelName?.toLowerCase() || 'large';
-    case ReasoningModel.modelId:
-      return ReasoningModel.shortModelName?.toLowerCase() || 'reason';
     default:
       return modelId.toLowerCase();
   }

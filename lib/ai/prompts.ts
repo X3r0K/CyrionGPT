@@ -26,7 +26,6 @@ export function buildSystemPrompt(
 const modelPromptMap: Record<string, string> = {
   'chat-model-small': `${getPentestGPTInfo('Small Model', 'June 2024')}${systemPromptEnding}`,
   'chat-model-large': `${getPentestGPTInfo('Large Model', 'June 2024')}${systemPromptEnding}`,
-  'chat-model-reasoning': `${getPentestGPTInfo('Reasoning Model', 'October 2024')}${systemPromptEnding}`,
 };
 
 export const getSystemPrompt = ({

@@ -205,3 +205,15 @@ export const getBatchFileStorageUrls = internalQuery({
     return results;
   },
 });
+
+/**
+ * Internal helper to generate an upload URL for clients via HTTP actions
+ */
+export const internalGenerateUploadUrl = internalMutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    const uploadUrl = await ctx.storage.generateUploadUrl();
+    return uploadUrl;
+  },
+});

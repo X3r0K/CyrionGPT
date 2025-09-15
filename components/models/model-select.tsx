@@ -5,7 +5,7 @@ import { type FC, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { LLM_LIST } from '@/lib/models/llm-list';
-import { LargeModel, ReasoningModel, SmallModel } from '@/lib/models/llm-list';
+import { LargeModel, SmallModel } from '@/lib/models/llm-list';
 
 interface ModelSelectProps {
   selectedModelId: LLMID;
@@ -36,11 +36,7 @@ export const ModelSelect: FC<ModelSelectProps> = ({
   };
 
   // Define the specific order of models
-  const modelOrder: LLMID[] = [
-    LargeModel.modelId,
-    SmallModel.modelId,
-    ReasoningModel.modelId,
-  ];
+  const modelOrder: LLMID[] = [LargeModel.modelId, SmallModel.modelId];
 
   // Sort the models based on the predefined order
   const sortedModels = LLM_LIST.sort((a, b) => {

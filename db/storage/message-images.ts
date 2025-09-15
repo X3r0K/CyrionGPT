@@ -3,31 +3,46 @@ import type { MessageImage } from '@/types';
 import type { Doc } from '@/convex/_generated/dataModel';
 
 export const uploadImage = async (image: File): Promise<string> => {
-  const imageSizeLimit = 5000000; // 5MB
-
+  const imageSizeLimit = 5 * 1024 * 1024; // 5MB
   if (image.size > imageSizeLimit) {
-    throw new Error(`Image must be less than ${imageSizeLimit / 1000000}MB`);
+    throw new Error(
+      `Image must be less than ${imageSizeLimit / (1024 * 1024)}MB`,
+    );
   }
 
   try {
-    // Use makeAuthenticatedRequest with file upload support
-    // Backend will extract user ID from the authentication token
-    const result = await makeAuthenticatedRequest(
-      `/api/upload-image`,
+    // Step 1: Get short-lived upload URL
+    const genResp = await makeAuthenticatedRequest(
+      `/api/generate-upload-url`,
       'POST',
-      image,
-      {
-        'Content-Type': image.type,
-      },
+      { kind: 'image', size: image.size },
     );
-
-    if (!result?.success) {
-      throw new Error(result?.error || 'Upload failed');
+    const postUrl: string | undefined = genResp?.uploadUrl;
+    if (!postUrl) {
+      throw new Error('Failed to generate upload URL');
     }
 
-    return result.storageId;
+    // Step 2: POST the file to the upload URL
+    const uploadResponse = await fetch(postUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': image.type },
+      body: image,
+    });
+    if (!uploadResponse.ok) {
+      const err = await uploadResponse.json().catch(() => ({}));
+      throw new Error(err?.error || 'Failed to upload image to storage');
+    }
+    const { storageId } = (await uploadResponse.json()) as {
+      storageId: string;
+    };
+    if (!storageId) {
+      throw new Error('No storageId returned from upload');
+    }
+
+    // Step 3: Persist is handled elsewhere for images; return storageId
+    return storageId;
   } catch (error) {
-    console.error('Error uploading image to Convex:', error);
+    console.error('Error uploading image to Convex via upload URL:', error);
     throw error;
   }
 };

@@ -16,12 +16,4 @@ export const LargeModel: LLM = {
   description: 'Great for most questions',
 };
 
-export const ReasoningModel: LLM = {
-  modelId: 'reasoning-model',
-  modelName: 'Reasoning Model',
-  shortModelName: 'Reason',
-  imageInput: false,
-  description: 'Uses advanced reasoning',
-};
-
-export const LLM_LIST: LLM[] = [SmallModel, LargeModel, ReasoningModel];
+export const LLM_LIST: LLM[] = [SmallModel, LargeModel];

@@ -22,45 +22,69 @@ export const uploadFile = async (
   };
   storageId: string;
 }> => {
-  // 20MB limit for files
-  const sizeLimitMB = 20;
-  const MB_TO_BYTES = (mb: number) => mb * 1024 * 1024;
-  const SIZE_LIMIT = MB_TO_BYTES(sizeLimitMB);
-
-  if (file.size > SIZE_LIMIT) {
-    throw new Error(`File must be less than ${sizeLimitMB}MB`);
+  // Enforce 20MB client-side limit for files
+  const FILE_LIMIT_BYTES = 20 * 1024 * 1024;
+  if (file.size > FILE_LIMIT_BYTES) {
+    throw new Error(`File must be less than 20MB`);
   }
 
   try {
-    // Prepare form data with file and metadata
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append(
-      'metadata',
-      JSON.stringify({
-        name: fileRecord.name,
-        tokens: fileRecord.tokens || 0,
-        type: fileRecord.type,
-      }),
-    );
-
-    // Use makeAuthenticatedRequest with form data
-    const result = await makeAuthenticatedRequest(
-      `/api/upload-file`,
+    // Step 1: Request an upload URL
+    const genResp = await makeAuthenticatedRequest(
+      `/api/generate-upload-url`,
       'POST',
-      formData,
+      { kind: 'file', size: file.size },
     );
 
-    if (!result?.success) {
-      throw new Error(result?.error || 'Upload failed');
+    const postUrl: string | undefined = genResp?.uploadUrl;
+    if (!postUrl) {
+      throw new Error('Failed to generate upload URL');
+    }
+
+    // Step 2: POST the file to the upload URL
+    const uploadResponse = await fetch(postUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    });
+
+    if (!uploadResponse.ok) {
+      const err = await uploadResponse.json().catch(() => ({}));
+      throw new Error(err?.error || 'Failed to upload to storage');
+    }
+
+    const { storageId } = (await uploadResponse.json()) as {
+      storageId: string;
+    };
+    if (!storageId) {
+      throw new Error('No storageId returned from upload');
+    }
+
+    // Step 3: Save the storageId and metadata via API
+    const saveResp = await makeAuthenticatedRequest(
+      `/api/save-uploaded-file`,
+      'POST',
+      {
+        storageId,
+        metadata: {
+          name: fileRecord.name,
+          tokens: fileRecord.tokens || 0,
+          type: fileRecord.type,
+          size: file.size,
+        },
+      },
+    );
+
+    if (!saveResp?.success) {
+      throw new Error(saveResp?.error || 'Failed to save uploaded file');
     }
 
     return {
-      file: result.file,
-      storageId: result.storageId,
+      file: saveResp.file,
+      storageId,
     };
   } catch (error) {
-    console.error('Error uploading file with record to Convex:', error);
+    console.error('Error uploading file via upload URL flow:', error);
     throw error;
   }
 };

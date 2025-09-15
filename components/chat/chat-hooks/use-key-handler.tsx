@@ -33,14 +33,6 @@ export const useKeyboardHandler = ({
     const items = event.clipboardData.items;
     for (const item of items) {
       if (item.type.indexOf('image') === 0) {
-        // Check if using reasoning model
-        if (chatSettings?.model === 'reasoning-model') {
-          toast.error(
-            'Image uploads are not supported with the Reasoning Model',
-          );
-          return;
-        }
-
         if (!isPremiumSubscription) {
           toast.error(
             'Image uploads are only available for pro and team users. Please upgrade to upload images.',

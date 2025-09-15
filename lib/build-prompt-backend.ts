@@ -163,7 +163,6 @@ async function processFileAttachments(
   attachments: any[],
   fileItems: Doc<'file_items'>[],
   userId: string,
-  isReasoning: boolean,
   isTerminal: boolean,
 ): Promise<{ content: MessageContent[]; hasPdfAttachments: boolean }> {
   const processedContent: MessageContent[] = [];
@@ -177,11 +176,7 @@ async function processFileAttachments(
     );
     if (!fileItem) continue;
 
-    if (isReasoning) {
-      // Use buildDocumentsText for all files including PDFs
-      const documentsText = buildDocumentsText([fileItem]);
-      processedContent.push({ type: 'text', text: documentsText } as TextPart);
-    } else if (isTerminal) {
+    if (isTerminal) {
       // Add XML-like attachment reference for pentest agent
       const attachmentRef = createAttachmentReferences([fileItem], LOCAL_PATH);
       processedContent.push({ type: 'text', text: attachmentRef } as TextPart);
@@ -211,7 +206,6 @@ async function processFileAttachments(
 export async function processMessageContentWithAttachments(
   messages: BuiltChatMessage[],
   userId: string,
-  isReasoning: boolean,
   isTerminal = false,
 ): Promise<{
   processedMessages: BuiltChatMessage[];
@@ -272,7 +266,6 @@ export async function processMessageContentWithAttachments(
             message.attachments,
             messageFileItems,
             userId,
-            isReasoning,
             isTerminal,
           );
 

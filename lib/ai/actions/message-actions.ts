@@ -251,7 +251,7 @@ export async function saveAssistantMessage({
     plugin: modelParams.selectedPlugin,
     thinkingContent: thinkingText,
     thinkingElapsedSecs: thinkingElapsedSecs || undefined,
-    thinkingEnabled: model === 'reasoning-model',
+    thinkingEnabled: false,
     citations: citations || [],
     attachments: fileAttachments || [],
     imagePaths: imagePaths || [],

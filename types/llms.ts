@@ -1,10 +1,6 @@
 import type { PluginID } from './plugins';
 
-export const VALID_MODEL_IDS = [
-  'mistral-medium',
-  'mistral-large',
-  'reasoning-model',
-] as const;
+export const VALID_MODEL_IDS = ['mistral-medium', 'mistral-large'] as const;
 
 export type LLMID = (typeof VALID_MODEL_IDS)[number];
 

@@ -272,7 +272,6 @@ export async function processChatMessages(
   // Process images using unified function
   const imageResult = await processMessagesWithImagesUnified(
     messagesCopy,
-    selectedModel,
     isTerminal ? '/home/user' : undefined,
   );
 
@@ -303,7 +302,6 @@ export async function processChatMessages(
   const attachmentResult = await processMessageContentWithAttachments(
     processedMessages,
     profile.user_id,
-    selectedModel === 'reasoning-model',
     isTerminal,
   );
 

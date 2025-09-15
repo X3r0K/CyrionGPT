@@ -291,7 +291,9 @@ export const Message: FC<MessageProps> = ({
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2" />
+        <div
+          className={`flex flex-wrap gap-2 ${message.role === 'user' ? 'mt-3' : ''}`}
+        />
 
         {isEditing && (
           <div className="mt-2 flex justify-end space-x-2">

@@ -190,7 +190,7 @@ export const UpgradePlan: FC = () => {
             <PlanStatement>
               Access to file uploads, vision, web search, and browsing
             </PlanStatement>
-            <PlanStatement>Access to reasoning model</PlanStatement>
+            <PlanStatement>Access to terminal tool</PlanStatement>
             <PlanStatement>Opportunities to test new features</PlanStatement>
           </PlanCard>
 

@@ -11,6 +11,8 @@ import {
   getStorageUrlHttp,
   getBatchStorageUrlsHttp,
   deleteStorageItemHttp,
+  generateUploadUrlHttp,
+  saveUploadedFileHttp,
 } from './fileStorageHttp';
 import { createOptionsHandler } from './httpUtils';
 
@@ -77,6 +79,20 @@ http.route({
   path: '/api/upload-file',
   method: 'POST',
   handler: uploadFileHttp,
+});
+
+// New: Register endpoint to generate upload URL
+http.route({
+  path: '/api/generate-upload-url',
+  method: 'POST',
+  handler: generateUploadUrlHttp,
+});
+
+// New: Register endpoint to save uploaded file record
+http.route({
+  path: '/api/save-uploaded-file',
+  method: 'POST',
+  handler: saveUploadedFileHttp,
 });
 
 // Register unified storage URL endpoint (replaces both image and file URL endpoints)
@@ -151,6 +167,18 @@ http.route({
 
 http.route({
   path: '/api/upload-file',
+  method: 'OPTIONS',
+  handler: createOptionsHandler(['POST', 'OPTIONS']),
+});
+
+http.route({
+  path: '/api/generate-upload-url',
+  method: 'OPTIONS',
+  handler: createOptionsHandler(['POST', 'OPTIONS']),
+});
+
+http.route({
+  path: '/api/save-uploaded-file',
   method: 'OPTIONS',
   handler: createOptionsHandler(['POST', 'OPTIONS']),
 });

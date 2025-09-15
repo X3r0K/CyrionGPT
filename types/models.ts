@@ -2,8 +2,7 @@ export type RateLimitedFeature =
   | 'pentestgpt' // Small Model
   | 'pentestgpt-pro' // Large Model
   | 'terminal' // Terminal
-  | 'stt-1' // Speech-to-text
-  | 'reasoning-model'; // Reasoning model
+  | 'stt-1'; // Speech-to-text
 
 export interface RateLimitInfo {
   remaining: number;

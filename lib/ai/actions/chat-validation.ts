@@ -125,7 +125,6 @@ async function getProviderConfig(
     'mistral-medium': 'chat-model-small',
     'mistral-large': 'chat-model-large',
     'gpt-4-turbo-preview': 'chat-model-large',
-    'reasoning-model': 'reasoning-model',
   };
   // Moving away from gpt-4-turbo-preview to pentestgpt-pro
   const rateLimitModelMap: Record<string, string> = {

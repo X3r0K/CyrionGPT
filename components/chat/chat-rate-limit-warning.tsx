@@ -35,8 +35,6 @@ const RateLimitWarning: React.FC<RateLimitWarningProps> = ({
         return 'Terminal';
       case 'stt-1':
         return 'Speech-to-text';
-      case 'reasoning-model':
-        return 'reasoning-model';
       case 'image-gen':
         return 'image-gen';
       case 'deep-research':

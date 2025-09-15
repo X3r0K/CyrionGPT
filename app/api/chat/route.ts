@@ -3,7 +3,6 @@ import { handleErrorResponse } from '@/lib/models/api-error';
 import { createDataStreamResponse, smoothStream, streamText } from 'ai';
 import { myProvider } from '@/lib/ai/providers';
 import PostHogClient from '@/app/posthog';
-import { handleToolExecution } from '@/lib/ai/tool-handler';
 import { createToolSchemas } from '@/lib/ai/tools/toolSchemas';
 import {
   processChatMessages,
@@ -141,22 +140,6 @@ export async function POST(request: Request) {
       chat,
       messages,
     });
-
-    const toolResponse = await handleToolExecution({
-      chat,
-      messages: processedMessages,
-      modelParams,
-      profile,
-      isLargeModel: config.isLargeModel,
-      abortSignal: request.signal,
-      chatMetadata,
-      model,
-      rateLimitInfo: config.rateLimitInfo,
-      initialChatPromise,
-    });
-    if (toolResponse) {
-      return toolResponse;
-    }
 
     const posthog = PostHogClient();
     if (posthog) {

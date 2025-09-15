@@ -20,7 +20,6 @@ const MODEL_DISPLAY_NAMES: Record<string, string> = {
   'pentestgpt-pro': 'Large Model',
   terminal: 'Terminal',
   'stt-1': 'speech-to-text',
-  'reasoning-model': 'reasoning model',
 };
 
 export type RateLimitResult = {
@@ -261,9 +260,6 @@ function getPremiumModelSuggestions(model: string): string {
   if (model === 'pentestgpt' || model === 'pentestgpt-pro') {
     return `⚠️ You've reached the limits for both Small and Large models.\n\nPlease wait for the reset.`;
   }
-  if (model === 'reasoning-model') {
-    return `\n\nIn the meantime, you can use Large Model or Small Model`;
-  }
   return '';
 }
 
@@ -275,7 +271,7 @@ function getUpgradeMessage(): string {
 - Access to smarter models
 - Extended limits on messaging
 - Access to file uploads, vision, web search, and browsing
-- Access to terminal and reasoning model
+- Access to terminal tool
 - Opportunities to test new features`;
 }
 

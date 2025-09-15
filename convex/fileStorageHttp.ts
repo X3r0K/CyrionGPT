@@ -167,6 +167,157 @@ export const getBatchStorageUrlsHttp = httpAction(async (ctx, request) => {
 });
 
 /**
+ * HTTP action to generate an upload URL for Convex storage
+ * Clients should POST the file to this URL to receive a storageId
+ */
+export const generateUploadUrlHttp = httpAction(async (ctx, request) => {
+  const authResult = await validateAuthWithUser(request);
+  if (!authResult.success || !authResult.user) {
+    return createErrorResponse(
+      authResult.error || 'Authentication failed',
+      401,
+    );
+  }
+
+  try {
+    // Validate requested kind and size before issuing an upload URL
+    const body = await request.json().catch(() => ({}) as any);
+    const kind = (body?.kind as 'image' | 'file' | undefined) || undefined;
+    const size = (body?.size as number | undefined) || undefined;
+
+    if (!kind || (kind !== 'image' && kind !== 'file')) {
+      return createErrorResponse(
+        'Missing or invalid kind ("image" | "file")',
+        400,
+      );
+    }
+    if (typeof size !== 'number' || size <= 0) {
+      return createErrorResponse('Missing or invalid size', 400);
+    }
+
+    const IMAGE_LIMIT = 5 * 1024 * 1024; // 5MB
+    const FILE_LIMIT = 20 * 1024 * 1024; // 20MB
+    if (kind === 'image' && size > IMAGE_LIMIT) {
+      return createErrorResponse('Image must be less than 5MB', 400);
+    }
+    if (kind === 'file' && size > FILE_LIMIT) {
+      return createErrorResponse('File must be less than 20MB', 400);
+    }
+
+    const subscriptionInfo = await ctx.runQuery(
+      api.subscriptions.checkSubscription,
+      {
+        serviceKey: process.env.CONVEX_SERVICE_ROLE_KEY!,
+        userId: authResult.user.id,
+      },
+    );
+
+    if (subscriptionInfo.planType === 'free') {
+      return createErrorResponse(
+        'File uploads are only available for Pro and Team users. Please upgrade your subscription to upload.',
+        403,
+      );
+    }
+
+    // Generate a short-lived upload URL
+    const uploadUrl = await ctx.runMutation(
+      internal.fileStorage.internalGenerateUploadUrl,
+      {},
+    );
+
+    return createResponse({ uploadUrl }, 200);
+  } catch (error) {
+    console.error('[GENERATE_UPLOAD_URL] Error:', error);
+    return createErrorResponse('Internal server error', 500);
+  }
+});
+
+/**
+ * HTTP action to persist an uploaded file (with storageId) into DB
+ */
+export const saveUploadedFileHttp = httpAction(async (ctx, request) => {
+  const authResult = await validateAuthWithUser(request);
+  if (!authResult.success || !authResult.user) {
+    return createErrorResponse(
+      authResult.error || 'Authentication failed',
+      401,
+    );
+  }
+
+  try {
+    const body = await request.json();
+    const { storageId, metadata } = body as {
+      storageId: Id<'_storage'>;
+      metadata: {
+        name?: string;
+        tokens?: number;
+        type?: string;
+        size?: number;
+      };
+    };
+
+    if (!storageId) {
+      return createErrorResponse('Missing storageId', 400);
+    }
+
+    if (!metadata || !metadata.type || !metadata.name || !metadata.size) {
+      return createErrorResponse(
+        'Missing required metadata (name, type, size)',
+        400,
+      );
+    }
+
+    // Enforce 20MB limit for files on save
+    const FILE_LIMIT = 20 * 1024 * 1024; // 20MB
+    if (metadata.size > FILE_LIMIT) {
+      return createErrorResponse('File must be less than 20MB', 400);
+    }
+
+    // Check file count limit to prevent abuse
+    const filesCounts = await ctx.runQuery(
+      internal.files.internalGetAllFilesCount,
+      {
+        userId: authResult.user.id,
+      },
+    );
+    const maxFiles = 500;
+    if (filesCounts >= maxFiles) {
+      return createErrorResponse(
+        `File limit reached. Maximum ${maxFiles} files allowed.`,
+        400,
+      );
+    }
+
+    // Create file record with provided storageId
+    const createdFile = await ctx.runMutation(
+      internal.files.internalCreateFile,
+      {
+        fileData: {
+          user_id: authResult.user.id,
+          file_path: storageId as unknown as string,
+          name: metadata.name,
+          size: metadata.size,
+          tokens: metadata.tokens || 0,
+          type: metadata.type,
+        },
+      },
+    );
+
+    return createResponse(
+      {
+        success: true,
+        file: createdFile,
+        storageId,
+      },
+      200,
+    );
+  } catch (error) {
+    console.error('[SAVE_UPLOADED_FILE] Error:', error);
+    return createErrorResponse('Internal server error', 500);
+  }
+});
+
+/**
  * HTTP action to upload files with complete database record creation
  */
 export const uploadFileHttp = httpAction(async (ctx, request) => {
