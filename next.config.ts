@@ -32,8 +32,7 @@ const config: NextConfig = require('@ducanh2912/next-pwa').default({
         hostname: '**',
       },
     ],
-    // Remove global unoptimized flag to enable optimization for specific images
-    // unoptimized: true,
+    unoptimized: true,
   },
   serverExternalPackages: ['sharp', 'onnxruntime-node'],
   async rewrites() {
