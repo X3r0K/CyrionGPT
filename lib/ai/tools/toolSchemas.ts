@@ -1,5 +1,4 @@
-import { createWebSearchTool } from './web-search';
-import { createBrowserTool } from './browser';
+import { createWebTool } from './web';
 import { createShellExecTool } from './run_terminal_cmd-tool';
 import { createGetTerminalFilesTool } from './get_terminal_files-tool';
 import { DefaultSandboxManager } from './agent/utils/sandbox-manager';
@@ -8,21 +7,22 @@ import type { Sandbox } from '@e2b/code-interpreter';
 import type { ToolContext } from './agent/types';
 import type { AgentMode } from '@/types/llms';
 import type { PluginID } from '@/types';
+import { Geo } from '@vercel/functions/headers';
 
 export const createToolSchemas = ({
   profile,
   dataStream,
-  abortSignal,
   agentMode,
   pentestFiles,
   selectedPlugin,
+  userLocation,
 }: {
   profile: any;
   dataStream: any;
-  abortSignal: AbortSignal;
   agentMode?: AgentMode;
   pentestFiles?: Array<{ path: string; data: Buffer }>;
   selectedPlugin?: PluginID;
+  userLocation?: Geo & { timezone?: string };
 }) => {
   let sandbox: Sandbox | null = null;
   let pentestFilesUploaded = false;
@@ -44,11 +44,11 @@ export const createToolSchemas = ({
     agentMode,
     sandboxManager,
     selectedPlugin,
+    userLocation,
   } as ToolContext;
 
   const allSchemas = {
-    webSearch: createWebSearchTool(profile, dataStream),
-    browser: createBrowserTool(profile, abortSignal, dataStream),
+    web: createWebTool(context),
     run_terminal_cmd: createShellExecTool(context),
     get_terminal_files: createGetTerminalFilesTool(context),
   };

@@ -202,10 +202,10 @@ export async function POST(request: Request) {
           const toolSchemas = createToolSchemas({
             profile,
             dataStream,
-            abortSignal: request.signal,
             agentMode: modelParams.agentMode,
             pentestFiles,
             selectedPlugin: modelParams.selectedPlugin,
+            userLocation: userLocation || null,
           });
 
           // Upload pentest files immediately when terminal plugin is selected
@@ -244,6 +244,16 @@ export async function POST(request: Request) {
             onChunk: async (event: any) => {
               if (event.chunk.type === 'tool-call') {
                 toolUsed = event.chunk.toolName;
+                if (posthog) {
+                  try {
+                    posthog.capture({
+                      distinctId: profile.user_id,
+                      event: 'pentestgpt-' + event.chunk.toolName,
+                    });
+                  } catch (_) {
+                    // noop
+                  }
+                }
                 if (toolUsed === 'run_terminal_cmd') {
                   const { exec_dir, command } = event.chunk.args;
                   dataStream.writeData({
@@ -257,10 +267,7 @@ export async function POST(request: Request) {
                 // Handle tool results and extract citations
                 const { toolName, result } = event.chunk;
 
-                if (toolName === 'browser' && result?.url) {
-                  // For browser tool, add the URL as citation
-                  citations.push(result.url);
-                } else if (toolName === 'webSearch' && Array.isArray(result)) {
+                if (toolName === 'web' && Array.isArray(result)) {
                   // For web search tool, extract URLs from results
                   const searchCitations = result
                     .map((item: any) => item.url)

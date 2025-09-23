@@ -27,7 +27,7 @@ export const getToolsForPlugin = (
     !modelParams.isTemporaryChat &&
     selectedPlugin !== PluginID.WEB_SEARCH
   ) {
-    const tools = ['webSearch', 'browser'];
+    const tools = ['web'];
 
     // Only add terminal tools for large models
     tools.push('run_terminal_cmd', 'get_terminal_files');
@@ -36,5 +36,5 @@ export const getToolsForPlugin = (
   }
 
   // Default tools for other cases
-  return ['webSearch', 'browser'];
+  return ['web'];
 };

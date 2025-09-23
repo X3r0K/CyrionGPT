@@ -28,10 +28,6 @@ export const loadingStates = {
     icon: <Globe size={20} />,
     text: 'Searching the web...',
   },
-  [PluginID.BROWSER]: {
-    icon: <Globe size={20} />,
-    text: 'Browsing the web...',
-  },
   [PluginID.TERMINAL]: {
     icon: <SquareTerminal size={20} />,
     text: 'Using terminal...',

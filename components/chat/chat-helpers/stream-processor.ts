@@ -330,9 +330,8 @@ export const processResponse = async (
 
           const { toolName } = value;
           const toolMap = {
-            browser: PluginID.BROWSER,
+            web: PluginID.WEB_SEARCH,
             run_terminal_cmd: PluginID.TERMINAL,
-            webSearch: PluginID.WEB_SEARCH,
           } as const;
 
           const plugin = toolMap[toolName as keyof typeof toolMap];

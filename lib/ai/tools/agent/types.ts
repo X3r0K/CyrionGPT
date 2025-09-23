@@ -1,6 +1,7 @@
 import type { Sandbox } from '@e2b/code-interpreter';
 import type { AgentMode } from '@/types/llms';
 import type { PluginID } from '@/types';
+import { Geo } from '@vercel/functions/headers';
 
 export interface SandboxManager {
   getSandbox: () => Promise<{ sandbox: Sandbox }>;
@@ -17,7 +18,7 @@ export interface ToolContext {
   setSandbox: (sandbox: Sandbox) => void;
   agentMode: AgentMode;
   sandboxManager?: SandboxManager;
-  userCountryCode?: string | null;
+  userLocation?: Geo & { timezone?: string };
   selectedPlugin?: PluginID;
 }
 
