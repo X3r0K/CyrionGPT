@@ -28,8 +28,36 @@ export async function GET(request: Request) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) throw error;
 
-      // Get Google avatar if available
-      if (data?.user?.app_metadata?.provider === 'google') {
+      // Get provider avatar if available and check Convex profile existence
+      if (
+        ['google', 'azure'].includes(
+          data?.user?.app_metadata?.provider as string,
+        )
+      ) {
+        const userId = data.user?.id;
+
+        if (userId) {
+          try {
+            const convex = new ConvexHttpClient(
+              process.env.NEXT_PUBLIC_CONVEX_URL!,
+            );
+
+            // Check if Convex profile exists (do not create)
+            const result = await convex.mutation(api.profiles.hasProfile, {
+              serviceKey: process.env.CONVEX_SERVICE_ROLE_KEY!,
+              userId,
+            });
+
+            if (!result?.exists) {
+              return NextResponse.redirect(
+                new URL('https://hackerai.co/login'),
+              );
+            }
+          } catch (error) {
+            console.error('Error checking Convex profile existence:', error);
+          }
+        }
+
         const avatarUrl = data.user.user_metadata?.picture;
 
         if (avatarUrl && data.user) {
@@ -44,7 +72,7 @@ export async function GET(request: Request) {
               avatarUrl,
             });
           } catch (error) {
-            console.error('Error updating profile with Google avatar:', error);
+            console.error('Error updating profile avatar:', error);
           }
         }
       }

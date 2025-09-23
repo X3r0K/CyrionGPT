@@ -173,3 +173,23 @@ export const updateProfileAvatar = mutation({
     return false;
   },
 });
+
+export const hasProfile = mutation({
+  args: {
+    serviceKey: v.string(),
+    userId: v.string(),
+  },
+  returns: v.object({ exists: v.boolean() }),
+  handler: async (ctx, args) => {
+    if (args.serviceKey !== process.env.CONVEX_SERVICE_ROLE_KEY) {
+      throw new Error('Unauthorized');
+    }
+
+    const profile = await ctx.db
+      .query('profiles')
+      .withIndex('by_user_id', (q) => q.eq('user_id', args.userId))
+      .unique();
+
+    return { exists: !!profile };
+  },
+});

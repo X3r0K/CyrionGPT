@@ -141,18 +141,21 @@ export const deleteProfile = internalMutation({
 
       // Delete all images from storage
       if (allImagePaths.length > 0) {
-        const imageDeletions = allImagePaths.map((storageIdString) => {
+        const imageDeletions = allImagePaths.map(async (path) => {
           try {
-            // Convert string to storage ID
-            const storageId = storageIdString as Id<'_storage'>;
-            return ctx.storage.delete(storageId);
+            if (!path || typeof path !== 'string') {
+              return;
+            }
+            // Only delete when we have a Convex storage id string (no '/').
+            // If there's no slash, this might already be an Id<'_storage'> string
+            if (!path.includes('/')) {
+              await ctx.storage.delete(path as Id<'_storage'>);
+              return;
+            }
+
+            // Unknown format (likely external storage path) — skip safely
           } catch (error) {
-            console.error(
-              'Failed to delete storage file:',
-              storageIdString,
-              error,
-            );
-            return Promise.resolve(); // Continue with other deletions even if one fails
+            console.error('Failed to delete storage file:', path, error);
           }
         });
         await Promise.all(imageDeletions);
