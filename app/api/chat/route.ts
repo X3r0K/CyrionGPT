@@ -227,6 +227,15 @@ export async function POST(request: Request) {
                 reasoningEffort: 'minimal',
                 reasoningSummary: 'detailed',
               },
+              ...(!config.isPremiumUser
+                ? {
+                    openrouter: {
+                      provider: {
+                        sort: 'price',
+                      },
+                    },
+                  }
+                : {}),
             },
             messages: toVercelChatMessages(processedMessages, true),
             maxTokens: 4096,
