@@ -149,12 +149,13 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!hasImageAttachments && !hasPdfAttachments) {
-      if (config.isLargeModel) {
-        config.selectedModel = 'chat-model-large-text';
-      } else {
-        config.selectedModel = 'chat-model-small-text';
-      }
+    // Select appropriate model based on content type
+    if (hasImageAttachments) {
+      config.selectedModel = 'vision-model';
+    } else if (hasPdfAttachments) {
+      config.selectedModel = 'vision-model-for-pdfs';
+    } else {
+      config.selectedModel = 'ask-model';
     }
 
     try {

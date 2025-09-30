@@ -129,7 +129,7 @@ export async function generateTitleFromUserMessage({
     const {
       object: { title },
     } = await generateObject({
-      model: myProvider.languageModel('chat-model-small'),
+      model: myProvider.languageModel('title-generator-model'),
       providerOptions: {
         openai: {
           store: false,
