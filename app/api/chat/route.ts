@@ -150,10 +150,10 @@ export async function POST(request: Request) {
     }
 
     // Select appropriate model based on content type
-    if (hasImageAttachments) {
-      config.selectedModel = 'vision-model';
-    } else if (hasPdfAttachments) {
+    if (hasPdfAttachments) {
       config.selectedModel = 'vision-model-for-pdfs';
+    } else if (hasImageAttachments) {
+      config.selectedModel = 'vision-model';
     } else {
       config.selectedModel = 'ask-model';
     }
