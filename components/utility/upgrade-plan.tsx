@@ -166,8 +166,8 @@ export const UpgradePlan: FC = () => {
                 >
                   hackerai.co
                 </a>
-                . When you click upgrade, you&apos;ll be redirected there to create
-                an account or login.
+                . When you click upgrade, you&apos;ll be redirected there to
+                create an account or login.
               </p>
             </div>
           </div>
