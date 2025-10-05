@@ -3,14 +3,19 @@
 import Loading from '@/app/loading';
 import { Button } from '@/components/ui/button';
 import { PentestGPTContext } from '@/context/context';
-import { getCheckoutUrl } from '@/lib/server/stripe-url';
 import { getSubscriptionByUserId } from '@/db/subscriptions';
 import {
   Sparkles,
   Users,
   ArrowLeft,
-  CircleCheck,
   LoaderCircle,
+  Info,
+  MessagesSquare,
+  Upload,
+  SquareTerminal,
+  Brain,
+  CreditCard,
+  FlaskConical,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FC, useContext, useState, useEffect } from 'react';
@@ -20,18 +25,17 @@ import PentestGPTTextSVG from '@/components/icons/pentestgpt-text-svg';
 import { TabGroup, TabList, Tab } from '@headlessui/react';
 import { useUIContext } from '@/context/ui-context';
 
-const YEARLY_PRO_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRO_PRICE_ID;
-
 export const UpgradePlan: FC = () => {
   const router = useRouter();
   const { profile } = useContext(PentestGPTContext);
   const { isMobile } = useUIContext();
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>(
     'monthly',
   );
-  const [loadingPlan, setLoadingPlan] = useState<'pro' | 'team' | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<
+    'pro' | 'ultra' | 'team' | null
+  >(null);
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -48,13 +52,6 @@ export const UpgradePlan: FC = () => {
           router.push('/login');
           return;
         }
-
-        const result = await getCheckoutUrl();
-        if (result.type === 'error') {
-          throw new Error(result.error.message);
-        } else {
-          setCheckoutUrl(result.value);
-        }
       } catch (error) {
         toast.error((error as Error).message);
       } finally {
@@ -65,42 +62,19 @@ export const UpgradePlan: FC = () => {
     initialize();
   }, [profile, router]);
 
-  const handleUpgradeClick = async (planType: 'pro' | 'team') => {
+  const handleUpgradeClick = async (planType: 'pro' | 'ultra' | 'team') => {
     if (isLoading || !profile) return;
 
     setLoadingPlan(planType);
 
     try {
-      if (planType === 'team') {
-        redirectToNewTeamPage();
-        return;
-      }
-
-      let url: string | null = null;
-      const priceId: string | undefined =
-        selectedPlan === 'yearly' ? YEARLY_PRO_PRICE_ID : undefined;
-
-      if (checkoutUrl && selectedPlan === 'monthly') {
-        url = checkoutUrl;
-      } else {
-        const result = await getCheckoutUrl(priceId);
-        if (result.type === 'error') {
-          throw new Error(result.error.message);
-        }
-        url = result.value;
-      }
-
-      router.push(url);
+      // Redirect to HackerAI login with pricing redirect
+      window.location.href = 'https://hackerai.co/login?intent=pricing';
     } catch (_error) {
       toast.error('Failed to process upgrade. Please try again.');
     } finally {
       setLoadingPlan(null);
     }
-  };
-
-  const redirectToNewTeamPage = () => {
-    const yearlyParam = selectedPlan === 'yearly' ? 'true' : 'false';
-    router.push(`/team/new-team?yearly=${yearlyParam}`);
   };
 
   if (isLoading) {
@@ -112,16 +86,47 @@ export const UpgradePlan: FC = () => {
   }
 
   const planPrices = {
-    pro: { monthly: '$25', yearly: '$20' },
-    team: { monthly: '$40', yearly: '$32' },
+    pro: { monthly: '$20', yearly: '$17' },
+    ultra: { monthly: '$200', yearly: '$166' },
+    team: { monthly: '$40', yearly: '$33' },
   };
 
-  const getYearlySavingsNote = (plan: 'pro' | 'team') => {
+  const getYearlySavingsNote = (plan: 'pro' | 'ultra' | 'team') => {
     if (selectedPlan === 'yearly') {
-      return plan === 'pro' ? 'Save $60' : 'Save $96';
+      if (plan === 'pro') return 'Save $36/year';
+      if (plan === 'ultra') return 'Save $408/year';
+      if (plan === 'team') return 'Save $84/year';
     }
     return '';
   };
+
+  type PlanFeature = {
+    icon: FC<{ size?: number; className?: string }>;
+    text: string;
+  };
+
+  const proFeatures: Array<PlanFeature> = [
+    { icon: Sparkles, text: 'Access to smartest AI model' },
+    { icon: MessagesSquare, text: 'Expanded messaging' },
+    { icon: Upload, text: 'Access to file uploads' },
+    { icon: SquareTerminal, text: 'Agent mode with terminal' },
+    { icon: Brain, text: 'Expanded memory and context' },
+  ];
+
+  const ultraFeatures: Array<PlanFeature> = [
+    { icon: MessagesSquare, text: 'Unlimited messages and uploads' },
+    { icon: Brain, text: 'Maximum memory and context' },
+    { icon: FlaskConical, text: 'Research preview of new features' },
+  ];
+
+  const teamFeatures: Array<PlanFeature> = [
+    {
+      icon: Sparkles,
+      text: 'Everything in Pro: smartest AI model, expanded messaging, file uploads, agent mode with terminal, expanded memory and context',
+    },
+    { icon: CreditCard, text: 'Centralized billing and invoicing' },
+    { icon: Users, text: 'Advanced team + seat management' },
+  ];
 
   return (
     <div className="flex w-full flex-col">
@@ -142,7 +147,33 @@ export const UpgradePlan: FC = () => {
         </div>
       </div>
       <div className="flex grow flex-col items-center justify-center p-2 md:mt-16 md:p-8">
-        <span className="mb-8 text-center text-2xl font-semibold md:text-3xl">
+        {/* Migration Notice */}
+        <div className="mb-6 w-full max-w-5xl rounded-md border border-primary/20 bg-primary/5 p-3 md:p-4">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 shrink-0 text-primary" size={20} />
+            <div className="flex-1">
+              <p className="text-sm md:text-base font-medium text-foreground">
+                <span className="font-semibold">Important Notice:</span>{' '}
+                PentestGPT is migrating to HackerAI
+              </p>
+              <p className="mt-1 text-xs md:text-sm text-muted-foreground">
+                We're migrating to a new website at{' '}
+                <a
+                  href="https://hackerai.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary hover:text-primary/80 underline"
+                >
+                  hackerai.co
+                </a>
+                . When you click upgrade, you'll be redirected there to create
+                an account or login.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <span className="mb-6 md:mb-8 text-center text-2xl font-semibold md:text-3xl">
           Upgrade your plan
         </span>
 
@@ -151,7 +182,7 @@ export const UpgradePlan: FC = () => {
             setSelectedPlan(index === 0 ? 'monthly' : 'yearly')
           }
         >
-          <TabList className="bg-secondary mx-auto mb-6 flex w-64 space-x-2 rounded-xl p-1">
+          <TabList className="bg-secondary mx-auto mb-6 flex w-64 md:w-72 space-x-2 rounded-xl p-1">
             {['Monthly', 'Yearly'].map((plan) => (
               <Tab
                 key={plan}
@@ -172,9 +203,9 @@ export const UpgradePlan: FC = () => {
         </TabGroup>
 
         <div
-          className={`grid w-full max-w-5xl ${
-            isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-4'
-          } lg:px-28`}
+          className={`grid w-full max-w-7xl ${
+            isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-3 gap-4'
+          } px-3 md:px-6`}
         >
           {/* Pro Plan */}
           <PlanCard
@@ -184,15 +215,20 @@ export const UpgradePlan: FC = () => {
             buttonLoading={loadingPlan === 'pro'}
             onButtonClick={() => handleUpgradeClick('pro')}
             savingsNote={getYearlySavingsNote('pro')}
-          >
-            <PlanStatement>Access to smarter models</PlanStatement>
-            <PlanStatement>Extended limits on messaging</PlanStatement>
-            <PlanStatement>
-              Access to file uploads, vision, web search, and browsing
-            </PlanStatement>
-            <PlanStatement>Access to terminal tool</PlanStatement>
-            <PlanStatement>Opportunities to test new features</PlanStatement>
-          </PlanCard>
+            features={proFeatures}
+          />
+
+          {/* Ultra Plan */}
+          <PlanCard
+            title="Ultra"
+            price={`USD ${planPrices.ultra[selectedPlan]}/month`}
+            buttonText="Upgrade to Ultra"
+            buttonLoading={loadingPlan === 'ultra'}
+            onButtonClick={() => handleUpgradeClick('ultra')}
+            savingsNote={getYearlySavingsNote('ultra')}
+            features={ultraFeatures}
+            footerNote="Unlimited subject to abuse guardrails."
+          />
 
           {/* Team Plan */}
           <PlanCard
@@ -202,11 +238,8 @@ export const UpgradePlan: FC = () => {
             buttonLoading={loadingPlan === 'team'}
             onButtonClick={() => handleUpgradeClick('team')}
             savingsNote={getYearlySavingsNote('team')}
-          >
-            <PlanStatement>Everything in Pro</PlanStatement>
-            <PlanStatement>Higher usage limits</PlanStatement>
-            <PlanStatement>Central billing and administration</PlanStatement>
-          </PlanCard>
+            features={teamFeatures}
+          />
         </div>
       </div>
       <div className="h-16" /> {/* Increased footer space */}
@@ -221,8 +254,12 @@ interface PlanCardProps {
   buttonLoading?: boolean;
   onButtonClick?: () => void;
   savingsNote?: string;
-  children: React.ReactNode;
+  features: Array<{
+    icon: FC<{ size?: number; className?: string }>;
+    text: string;
+  }>;
   buttonDisabled?: boolean;
+  footerNote?: string;
 }
 
 const PlanCard: FC<PlanCardProps> = ({
@@ -232,58 +269,64 @@ const PlanCard: FC<PlanCardProps> = ({
   buttonLoading,
   onButtonClick,
   savingsNote,
-  children,
+  features,
   buttonDisabled,
-}) => (
-  <div className="bg-popover border-primary/20 flex flex-col rounded-lg border p-6 text-left shadow-md">
-    <div className="mb-4">
-      <h2 className="flex items-center text-xl font-bold">
-        {title === 'Pro' ? (
-          <Sparkles className="mr-2" size={18} />
-        ) : (
-          <Users className="mr-2" size={18} />
-        )}
-        {title}
-      </h2>
-      <p className="text-muted-foreground mt-1">{price}</p>
-      {savingsNote && (
-        <p className="mt-1 text-sm font-medium text-green-500">{savingsNote}</p>
-      )}
-    </div>
-    <Button
-      variant="default"
-      onClick={onButtonClick}
-      disabled={buttonLoading || buttonDisabled}
-      className="mb-6 w-full"
-    >
-      {buttonLoading && (
-        <LoaderCircle size={22} className="mr-2 animate-spin" />
-      )}
-      <span>{buttonText}</span>
-    </Button>
-    <div className="grow space-y-3">{children}</div>
-    {title === 'Pro' && (
-      <div className="mb-1 mt-6 text-left">
-        <a
-          href="https://help.hackerai.co/en/articles/9982061-what-is-pentestgpt-pro"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:text-primary/80 text-xs font-medium underline"
-        >
-          Learn more about usage limits and FAQs
-        </a>
-      </div>
-    )}
-  </div>
-);
+  footerNote,
+}) => {
+  const getIcon = () => {
+    if (title === 'Pro') return <Sparkles className="mr-2" size={18} />;
+    if (title === 'Ultra') return <FlaskConical className="mr-2" size={18} />;
+    return <Users className="mr-2" size={18} />;
+  };
 
-const PlanStatement: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="mb-2 flex items-center">
-    <div className="icon-container mr-2">
-      <CircleCheck size={18} strokeWidth={1.5} />
+  return (
+    <div className="bg-popover border-primary/20 flex flex-col rounded-lg border p-6 text-left shadow-md">
+      <div className="mb-4">
+        <h2 className="flex items-center text-xl font-bold">
+          {getIcon()}
+          {title}
+        </h2>
+        <p className="text-muted-foreground mt-1">{price}</p>
+        {savingsNote && (
+          <p className="mt-1 text-sm font-medium text-green-500">
+            {savingsNote}
+          </p>
+        )}
+      </div>
+      <Button
+        variant="default"
+        onClick={onButtonClick}
+        disabled={buttonLoading || buttonDisabled}
+        className="mb-6 w-full"
+      >
+        {buttonLoading && (
+          <LoaderCircle size={22} className="mr-2 animate-spin" />
+        )}
+        <span>{buttonText}</span>
+      </Button>
+      <div className="grow space-y-3">
+        {features.map((feature, index) => (
+          <div key={index} className="flex items-start gap-3">
+            <feature.icon size={18} className="mt-0.5 shrink-0" />
+            <span className="text-foreground text-sm">{feature.text}</span>
+          </div>
+        ))}
+      </div>
+      {footerNote && (
+        <p className="text-muted-foreground text-xs mt-4">{footerNote}</p>
+      )}
+      {title === 'Pro' && (
+        <div className="mb-1 mt-6 text-left">
+          <a
+            href="https://help.hackerai.co/en/articles/9982061-what-is-pentestgpt-pro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 text-xs font-medium underline"
+          >
+            Learn more about usage limits and FAQs
+          </a>
+        </div>
+      )}
     </div>
-    <div className="text-container flex-1 text-base">
-      <p>{children}</p>
-    </div>
-  </div>
-);
+  );
+};
