@@ -157,7 +157,7 @@ export const UpgradePlan: FC = () => {
                 PentestGPT is migrating to HackerAI
               </p>
               <p className="mt-1 text-xs md:text-sm text-muted-foreground">
-                We're migrating to a new website at{' '}
+                We&apos;re migrating to a new website at{' '}
                 <a
                   href="https://hackerai.co"
                   target="_blank"
@@ -166,7 +166,7 @@ export const UpgradePlan: FC = () => {
                 >
                   hackerai.co
                 </a>
-                . When you click upgrade, you'll be redirected there to create
+                . When you click upgrade, you&apos;ll be redirected there to create
                 an account or login.
               </p>
             </div>
