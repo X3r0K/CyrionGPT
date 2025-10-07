@@ -4,7 +4,7 @@ import Exa from 'exa-js';
 import type { ToolContext } from './agent/types';
 
 /**
- * Web tool using Exa API
+ * Web tool using Exa API for search and Jina AI for URL reading
  * Provides search and URL opening capabilities
  */
 export const createWebTool = (context: ToolContext) => {
@@ -110,15 +110,35 @@ The \`web\` tool has the following commands:
             return 'Error: URL is required for open_url command';
           }
 
-          const results = await exa.getContents([url], {
-            text: { maxCharacters: 12000 },
+          if (!process.env.JINA_API_KEY) {
+            throw new Error('JINA_API_KEY environment variable is not set');
+          }
+
+          // Construct the Jina AI reader URL
+          const jinaUrl = `https://r.jina.ai/${url}`;
+
+          // Make the request to Jina AI reader
+          const response = await fetch(jinaUrl, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${process.env.JINA_API_KEY}`,
+              'X-Timeout': '30',
+              'X-Base': 'final',
+            },
           });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const content = await response.text();
 
           if (dataStream?.writeData) {
             dataStream.writeData({ citations: [url] });
           }
 
-          return results.results;
+          // Truncate content to 12,000 characters
+          return content.slice(0, 12000);
         }
 
         return 'Error: Invalid command';
