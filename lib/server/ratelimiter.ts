@@ -267,12 +267,7 @@ function getPremiumModelSuggestions(model: string): string {
  * Get upgrade message for free users
  */
 function getUpgradeMessage(): string {
-  return `\n\n🔓 Want more? Upgrade to Pro or Team and unlock a world of features:
-- Access to smarter models
-- Extended limits on messaging
-- Access to file uploads, vision, web search, and browsing
-- Access to terminal tool
-- Opportunities to test new features`;
+  return `\n\n🔓 Want more? Visit our new website at https://hackerai.co/ for a better experience with more features!`;
 }
 
 export function getRateLimitErrorMessage(
@@ -285,10 +280,12 @@ export function getRateLimitErrorMessage(
 
   // Terminal model special handling
   if (model === 'terminal') {
-    const baseMessage = `⚠️ You've reached the limit for Terminal usage.\n\nTo ensure fair usage for all users, please wait ${remainingText} before trying again.`;
-    return premium
-      ? baseMessage
-      : `${baseMessage}\n\n🚀 Consider upgrading to Pro or Team for higher Terminal usage limits and more features.`;
+    if (!premium) {
+      // For free users, just show the HackerAI website message
+      return getUpgradeMessage().trim();
+    }
+    // For premium users, show the rate limit message
+    return `⚠️ You've reached the limit for Terminal usage.\n\nTo ensure fair usage for all users, please wait ${remainingText} before trying again.`;
   }
 
   // Premium users with fallback available - no error message needed
@@ -296,18 +293,22 @@ export function getRateLimitErrorMessage(
     return '';
   }
 
+  // For free users, just show the HackerAI website message
+  if (!premium) {
+    return getUpgradeMessage().trim();
+  }
+
+  // For premium users, show the rate limit message
   let message = `⚠️ You've reached the limit for ${getModelName(model)}.\n\nTo ensure fair usage for all users, please wait ${remainingText} before trying again.`;
 
-  if (premium) {
-    const suggestion = getPremiumModelSuggestions(model);
-    message = suggestion.startsWith('⚠️')
-      ? suggestion.replace(
-          'Please wait for the reset.',
-          `Please wait ${remainingText} before trying again.`,
-        )
-      : message + suggestion;
-  } else {
-    message += getUpgradeMessage();
+  const suggestion = getPremiumModelSuggestions(model);
+  if (suggestion.startsWith('⚠️')) {
+    message = suggestion.replace(
+      'Please wait for the reset.',
+      `Please wait ${remainingText} before trying again.`,
+    );
+  } else if (suggestion) {
+    message += suggestion;
   }
 
   return message.trim();
