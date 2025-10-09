@@ -86,7 +86,20 @@ export const SidebarContent: FC<SidebarContentProps> = ({
         </div>
       )}
 
-      {!isPremiumSubscription && !isInvitationPending && <SidebarUpgrade />}
+      {!isInvitationPending && (
+        <>
+          {isPremiumSubscription ? (
+            <SidebarUpgrade
+              title="Migrate to HackerAI"
+              subtitle="Unlock more features on our new platform"
+              redirectUrl="https://hackerai.co/login?confirm-migrate-pentestgpt=true"
+              icon="arrowRight"
+            />
+          ) : (
+            <SidebarUpgrade />
+          )}
+        </>
+      )}
 
       {isMobile && (
         <WithTooltip

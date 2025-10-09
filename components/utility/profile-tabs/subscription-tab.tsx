@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { PentestGPTContext } from '@/context/context';
 import { getBillingPortalUrl } from '@/lib/server/stripe-url';
 import type { SubscriptionStatus } from '@/types/chat';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, Info, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FC, useContext, useState } from 'react';
 import { toast } from 'sonner';
@@ -82,8 +82,43 @@ export const SubscriptionTab: FC<SubscriptionTabProps> = ({
     subscriptionStatus === 'free' &&
     process.env.NEXT_PUBLIC_ENABLE_STRIPE_RESTORE === 'true';
 
+  const handleMigrateClick = () => {
+    window.location.href =
+      'https://hackerai.co/login?confirm-migrate-pentestgpt=true';
+  };
+
   return (
     <div className="space-y-4">
+      {/* Migration Notice - Only show for premium users */}
+      {isPremiumSubscription && (
+        <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 shrink-0 text-primary" size={18} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">
+                <span className="font-semibold">Migrate to HackerAI</span>
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                We&apos;re moving to HackerAI with more features and better
+                performance. Migrate your account to unlock enhanced
+                capabilities.
+              </p>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleMigrateClick}
+                className="mt-3 flex items-center gap-1.5"
+                tabIndex={0}
+                aria-label="Migrate to HackerAI"
+              >
+                Migrate Now
+                <ArrowRight size={14} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-sm font-medium">Current plan</Label>
