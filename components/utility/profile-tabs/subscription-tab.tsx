@@ -91,23 +91,29 @@ export const SubscriptionTab: FC<SubscriptionTabProps> = ({
     <div className="space-y-4">
       {/* Migration Notice - Only show for premium users */}
       {isPremiumSubscription && (
-        <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+        <div className="rounded-md border border-orange-500/30 bg-orange-500/10 p-3">
           <div className="flex items-start gap-3">
-            <Info className="mt-0.5 shrink-0 text-primary" size={18} />
+            <Info className="mt-0.5 shrink-0 text-orange-500" size={18} />
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">
-                <span className="font-semibold">Migrate to HackerAI</span>
+                <span className="font-semibold">
+                  Action Required: PentestGPT is permanently moving to HackerAI
+                </span>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                We&apos;re moving to HackerAI with more features and better
-                performance. Migrate your account to unlock enhanced
-                capabilities.
+                This platform will be discontinued. To continue your
+                subscription, you must migrate to HackerAI.{' '}
+                <span className="font-medium text-foreground">
+                  Important: Create your HackerAI account using the same email
+                  address ({userEmail})
+                </span>{' '}
+                to maintain your subscription benefits.
               </p>
               <Button
                 variant="default"
                 size="sm"
                 onClick={handleMigrateClick}
-                className="mt-3 flex items-center gap-1.5"
+                className="mt-3 flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600"
                 tabIndex={0}
                 aria-label="Migrate to HackerAI"
               >

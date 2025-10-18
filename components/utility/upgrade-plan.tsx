@@ -27,7 +27,7 @@ import { useUIContext } from '@/context/ui-context';
 
 export const UpgradePlan: FC = () => {
   const router = useRouter();
-  const { profile } = useContext(PentestGPTContext);
+  const { profile, userEmail } = useContext(PentestGPTContext);
   const { isMobile } = useUIContext();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>(
@@ -148,26 +148,33 @@ export const UpgradePlan: FC = () => {
       </div>
       <div className="flex grow flex-col items-center justify-center p-2 md:mt-16 md:p-8">
         {/* Migration Notice */}
-        <div className="mb-6 w-full max-w-5xl rounded-md border border-primary/20 bg-primary/5 p-3 md:p-4">
+        <div className="mb-6 w-full max-w-5xl rounded-md border border-orange-500/30 bg-orange-500/10 p-3 md:p-4">
           <div className="flex items-start gap-3">
-            <Info className="mt-0.5 shrink-0 text-primary" size={20} />
+            <Info className="mt-0.5 shrink-0 text-orange-500" size={20} />
             <div className="flex-1">
               <p className="text-sm md:text-base font-medium text-foreground">
-                <span className="font-semibold">Important Notice:</span>{' '}
-                PentestGPT is migrating to HackerAI
+                <span className="font-semibold">
+                  PentestGPT has permanently moved to HackerAI
+                </span>
               </p>
               <p className="mt-1 text-xs md:text-sm text-muted-foreground">
-                We&apos;re migrating to a new website at{' '}
+                This platform is being discontinued. All new subscriptions are
+                now handled at{' '}
                 <a
                   href="https://hackerai.co"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-primary hover:text-primary/80 underline"
+                  className="font-medium text-orange-500 hover:text-orange-600 underline"
                 >
                   hackerai.co
                 </a>
-                . When you click upgrade, you&apos;ll be redirected there to
-                create an account or login.
+                .{' '}
+                <span className="font-medium text-foreground">
+                  You must create your account using your current email address
+                  ({userEmail})
+                </span>{' '}
+                to ensure proper subscription setup and avoid any billing
+                issues.
               </p>
             </div>
           </div>

@@ -90,8 +90,8 @@ export const SidebarContent: FC<SidebarContentProps> = ({
         <>
           {isPremiumSubscription ? (
             <SidebarUpgrade
-              title="Migrate to HackerAI"
-              subtitle="Unlock more features on our new platform"
+              title="Action Required: Migrate Now"
+              subtitle="Platform discontinuing. Use same email to migrate."
               redirectUrl="https://hackerai.co/login?confirm-migrate-pentestgpt=true"
               icon="arrowRight"
             />
