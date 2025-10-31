@@ -81,7 +81,8 @@ export const DeprecationPopup = () => {
           </AlertDialogTitle>
           <AlertDialogDescription className="pt-2 text-base">
             <span className="block mb-3">
-              PentestGPT will be deprecated by <strong>November 30, 2025</strong>.
+              PentestGPT will be deprecated by{' '}
+              <strong>November 30, 2025</strong>.
             </span>
             <span className="block mb-3">
               We've migrated to HackerAI, our new platform with better features
@@ -116,4 +117,3 @@ export const DeprecationPopup = () => {
     </AlertDialog>
   );
 };
-
