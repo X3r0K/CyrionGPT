@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { type FC, useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
+import { HACKERAI_MIGRATION_URL } from '@/lib/utils';
 
 interface SubscriptionTabProps {
   userEmail: string;
@@ -83,8 +84,7 @@ export const SubscriptionTab: FC<SubscriptionTabProps> = ({
     process.env.NEXT_PUBLIC_ENABLE_STRIPE_RESTORE === 'true';
 
   const handleMigrateClick = () => {
-    window.location.href =
-      'https://hackerai.co/login?confirm-migrate-pentestgpt=true';
+    window.location.href = HACKERAI_MIGRATION_URL;
   };
 
   return (

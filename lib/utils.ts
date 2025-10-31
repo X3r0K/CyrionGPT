@@ -158,3 +158,6 @@ export const sortByDateCategory = <T extends DateSortable>(
 };
 
 export const isProductionEnvironment = process.env.NODE_ENV === 'production';
+
+export const HACKERAI_MIGRATION_URL =
+  'https://hackerai.co/login?confirm-migrate-pentestgpt=true';

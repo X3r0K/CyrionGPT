@@ -11,6 +11,7 @@ import { SidebarHeader } from './sidebar-header';
 import { WithTooltip } from '../ui/with-tooltip';
 import { Settings } from '../utility/settings';
 import { useUIContext } from '@/context/ui-context';
+import { HACKERAI_MIGRATION_URL } from '@/lib/utils';
 
 export const SIDEBAR_ICON_SIZE = 26;
 
@@ -92,7 +93,7 @@ export const SidebarContent: FC<SidebarContentProps> = ({
             <SidebarUpgrade
               title="Action Required: Migrate Now"
               subtitle="Platform discontinuing. Use same email to migrate."
-              redirectUrl="https://hackerai.co/login?confirm-migrate-pentestgpt=true"
+              redirectUrl={HACKERAI_MIGRATION_URL}
               icon="arrowRight"
             />
           ) : (

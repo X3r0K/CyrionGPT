@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { AgentSidebarProvider } from '@/components/chat/chat-hooks/use-agent-sidebar';
 import type { Doc } from '@/convex/_generated/dataModel';
 import { supabase } from '@/lib/supabase/browser-client';
+import { DeprecationPopup } from '@/components/utility/deprecation-popup';
 
 const MESSAGES_PER_FETCH = 20;
 
@@ -453,7 +454,10 @@ export const GlobalState: FC<GlobalStateProps> = ({ children, user }) => {
         setRateLimitInfo,
       }}
     >
-      <AgentSidebarProvider>{children}</AgentSidebarProvider>
+      <AgentSidebarProvider>
+        <DeprecationPopup />
+        {children}
+      </AgentSidebarProvider>
     </PentestGPTContext.Provider>
   );
 };
