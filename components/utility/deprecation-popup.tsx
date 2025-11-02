@@ -85,12 +85,12 @@ export const DeprecationPopup = () => {
               <strong>November 30, 2025</strong>.
             </span>
             <span className="block mb-3">
-              We've migrated to HackerAI, our new platform with better features
+              We&apos;ve migrated to HackerAI, our new platform with better features
               and improvements currently in development.
             </span>
             <span className="block mb-3">
               To migrate your subscription, simply create an account on HackerAI
-              using the same email address, then click "Migrate Subscription".
+              using the same email address, then click &quot;Migrate Subscription&quot;.
             </span>
             <span className="block text-sm">
               Have questions?{' '}
