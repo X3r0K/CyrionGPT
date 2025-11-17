@@ -595,3 +595,97 @@ export const getChatByIdWithValidation = query({
     }
   },
 });
+
+const messageWithExtrasValidator = v.object({
+  _id: v.id('messages'),
+  _creationTime: v.number(),
+  id: v.string(),
+  chat_id: v.string(),
+  user_id: v.string(),
+  content: v.string(),
+  plugin: v.optional(v.string()),
+  role: v.string(),
+  sequence_number: v.number(),
+  thinking_content: v.optional(v.string()),
+  updated_at: v.optional(v.number()),
+  created_at: v.number(),
+});
+
+export const getChatHistoryChunk = internalQuery({
+  args: {
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  returns: v.object({
+    chats: v.array(
+      v.object({
+        _id: v.id('chats'),
+        _creationTime: v.number(),
+        id: v.string(),
+        user_id: v.string(),
+        model: v.string(),
+        name: v.string(),
+        finish_reason: v.optional(v.string()),
+        sharing: v.union(v.literal('private'), v.literal('public')),
+        last_shared_message_id: v.optional(v.string()),
+        shared_at: v.optional(v.number()),
+        shared_by: v.optional(v.string()),
+        updated_at: v.optional(v.number()),
+        messages: v.array(messageWithExtrasValidator),
+      }),
+    ),
+    isDone: v.boolean(),
+    continueCursor: v.union(v.string(), v.null()),
+  }),
+  handler: async (ctx, args) => {
+    const paginationResult = await ctx.db
+      .query('chats')
+      .withIndex('by_user_and_updated', (q) => q.eq('user_id', args.userId))
+      .order('desc')
+      .paginate(args.paginationOpts);
+
+    const chatHistories = [];
+
+    for (const chat of paginationResult.page) {
+      const messages = await ctx.db
+        .query('messages')
+        .withIndex('by_chat_and_sequence', (q) => q.eq('chat_id', chat.id))
+        .order('asc')
+        .collect();
+
+      if (messages.length === 0) {
+        chatHistories.push({
+          ...chat,
+          messages: [],
+        });
+        continue;
+      }
+
+      const processedMessages = messages.map((msg) => ({
+        _id: msg._id,
+        _creationTime: msg._creationTime,
+        id: msg.id,
+        chat_id: msg.chat_id,
+        user_id: msg.user_id,
+        content: msg.content,
+        plugin: msg.plugin,
+        role: msg.role,
+        sequence_number: msg.sequence_number,
+        thinking_content: msg.thinking_content,
+        updated_at: msg.updated_at,
+        created_at: msg._creationTime,
+      }));
+
+      chatHistories.push({
+        ...chat,
+        messages: processedMessages,
+      });
+    }
+
+    return {
+      chats: chatHistories,
+      isDone: paginationResult.isDone,
+      continueCursor: paginationResult.continueCursor,
+    };
+  },
+});

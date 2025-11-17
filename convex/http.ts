@@ -1,5 +1,6 @@
 import { httpRouter } from 'convex/server';
 import { handleChatsHttp } from './chatsHttp';
+import { handleChatHistoryHttp } from './chatHistoryHttp';
 import { getMessagesWithFilesHttp, searchMessagesHttp } from './messagesHttp';
 import { handleTeamsHttp } from './teamsHttp';
 import { handleSubscriptionsHttp } from './subscriptionsHttp';
@@ -23,6 +24,13 @@ http.route({
   path: '/api/chats',
   method: 'POST',
   handler: handleChatsHttp,
+});
+
+// Register chat history export endpoint
+http.route({
+  path: '/api/chat-history',
+  method: 'POST',
+  handler: handleChatHistoryHttp,
 });
 
 // Register teams endpoint
@@ -131,6 +139,12 @@ http.route({
 
 http.route({
   path: '/api/chats',
+  method: 'OPTIONS',
+  handler: createOptionsHandler(['POST', 'OPTIONS']),
+});
+
+http.route({
+  path: '/api/chat-history',
   method: 'OPTIONS',
   handler: createOptionsHandler(['POST', 'OPTIONS']),
 });
