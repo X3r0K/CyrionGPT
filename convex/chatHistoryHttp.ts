@@ -62,4 +62,3 @@ export const handleChatHistoryHttp = httpAction(async (ctx, request) => {
     return createErrorResponse('Internal server error', 500);
   }
 });
-

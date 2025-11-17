@@ -15,7 +15,7 @@ import { usePentestGPT } from '@/context/context';
 import { ExternalLink } from 'lucide-react';
 import { HACKERAI_MIGRATION_URL } from '@/lib/utils';
 
-const DEPRECATION_KEY = 'pentestgpt_deprecation_shown';
+const DEPRECATION_KEY = 'pentestgpt_deprecation_shown_v2';
 
 export const DeprecationPopup = () => {
   const { isPremiumSubscription, subscriptionLoaded } = usePentestGPT();
@@ -92,6 +92,11 @@ export const DeprecationPopup = () => {
               To migrate your subscription, simply create an account on HackerAI
               using the same email address, then click &quot;Migrate
               Subscription&quot;.
+            </span>
+            <span className="block mb-3">
+              <strong>Want to download your chat history?</strong> You can
+              export all your chats and messages in Settings → Data Controls
+              tab. Choose between JSON or CSV format.
             </span>
             <span className="block text-sm">
               Have questions?{' '}

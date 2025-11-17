@@ -31,4 +31,3 @@ export const getFullChatHistory = async (
 
   return (data?.chats ?? []) as ChatWithMessages[];
 };
-

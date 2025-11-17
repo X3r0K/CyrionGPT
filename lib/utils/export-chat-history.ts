@@ -26,7 +26,9 @@ export interface ExportedChatHistory {
   chats: ExportedChat[];
 }
 
-const transformChatHistory = (chatHistory: ChatWithMessages[]): ExportedChat[] =>
+const transformChatHistory = (
+  chatHistory: ChatWithMessages[],
+): ExportedChat[] =>
   chatHistory
     .map((chat) => ({
       id: chat.id,
@@ -47,8 +49,7 @@ const transformChatHistory = (chatHistory: ChatWithMessages[]): ExportedChat[] =
         .sort((a, b) => a.sequence_number - b.sequence_number),
     }))
     .sort(
-      (a, b) =>
-        (b.updated_at || b.created_at) - (a.updated_at || a.created_at),
+      (a, b) => (b.updated_at || b.created_at) - (a.updated_at || a.created_at),
     );
 
 /**
@@ -163,5 +164,3 @@ export const exportChatHistory = async (
     throw error;
   }
 };
-
-
