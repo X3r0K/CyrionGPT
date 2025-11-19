@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as chatHistoryHttp from "../chatHistoryHttp.js";
 import type * as chats from "../chats.js";
 import type * as chatsHttp from "../chatsHttp.js";
 import type * as crons from "../crons.js";
@@ -46,6 +47,7 @@ import type * as teamsHttp from "../teamsHttp.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  chatHistoryHttp: typeof chatHistoryHttp;
   chats: typeof chats;
   chatsHttp: typeof chatsHttp;
   crons: typeof crons;
